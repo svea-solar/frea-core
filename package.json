@@ -23,7 +23,7 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "name": "frea_core",
+  "name": "frea-core",
   "author": "Marcus Rådell",
   "module": "dist/frea_core.esm.js",
   "devDependencies": {
