@@ -1,5 +1,5 @@
 {
-  "include": ["src", "types"],
+  "include": ["src", "types", "test/api.test.ts"],
   "compilerOptions": {
     "module": "esnext",
     "lib": ["dom", "esnext"],
