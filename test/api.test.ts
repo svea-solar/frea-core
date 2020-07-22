@@ -6,10 +6,11 @@ const port = "5000";
 
 const setupModule = (api: HttpApi) => {
   const moduleApi = {
-    do_test_action: async (action: { argKey: string }) => ({
-      type: "##response_event_type##",
-      action,
-    }),
+    do_test_action: async (action: { argKey: string }) =>
+      ({
+        status: "succeeded",
+        data: action,
+      } as const),
   };
 
   const schema: ModuleSchema<typeof moduleApi> = {
