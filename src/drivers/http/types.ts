@@ -1,8 +1,12 @@
-export type ActionArgsSchema<
-  TAction extends (args: any) => any
-> = TAction extends (args: infer TArgs) => any ? (keyof TArgs)[] : never;
+import { Result } from "types";
 
-export type Api = { [k: string]: (args: any) => any };
+export type ActionArgsSchema<
+  TAction extends (args: any) => Result<any, any>
+> = TAction extends (args: infer TArgs) => Result<any, any>
+  ? (keyof TArgs)[]
+  : never;
+
+export type Api = { [k: string]: (args: any) => Result<any, any> };
 
 export type ActionsSchema<TApi extends Api> = {
   [K in keyof TApi]: {
