@@ -23,7 +23,7 @@ export const createApi: CreateApi = ({ port }) => {
       // type === any, so we need to make sure we got a schema back.
       if (!actionSchema) {
         res.json({
-          type: "frea_api.http.add_module:failed",
+          type: "frea_api.http.handle_action:failed",
           reason: "action_type_not_supported",
           actionType: type,
         });
