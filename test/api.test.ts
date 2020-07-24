@@ -21,7 +21,26 @@ const setupModule = (api: HttpApi) => {
   };
 
   api.addModule(schema, moduleApi);
+
+  return {
+    schema,
+  };
 };
+
+test("schemas", async () => {
+  const api = await createApi({ port });
+  const { schema } = setupModule(api);
+
+  const result = (
+    await axios({
+      method: "get",
+      url: `http://localhost:${port}/api`,
+    })
+  ).data;
+
+  await api.close();
+  expect(result).toEqual([schema]);
+});
 
 test("close:failed", async () => {
   const api = await createApi({ port });
@@ -73,7 +92,7 @@ test("addModule and act:succeeded", async () => {
   await api.close();
 
   expect(result).toEqual({
-    type: "##response_event_type##",
-    action: { argKey: "arg_value", type: "do_test_action" },
+    status: "succeeded",
+    data: { argKey: "arg_value", type: "do_test_action" },
   });
 });

@@ -1,21 +1,28 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { Close, HttpApi, AddModule } from "./types";
+import { Close, HttpApi, AddModule, ModuleSchema, Api } from "./types";
 
 type CreateApi = (args: { port: string }) => Promise<HttpApi>;
 
 export const createApi: CreateApi = ({ port }) => {
   const app = express();
 
+  let schemas: ModuleSchema<Api>[] = [];
+
   app.use(cors());
   app.use(bodyParser.json());
+
+  app.get("/api", (_, res) => {
+    res.json(schemas);
+  });
 
   app.get("/health", (_, res) => res.json({ status: "ready" }));
 
   app.get("/", (_, res) => res.json({ status: "ready" }));
 
   const addModule: AddModule = (schema, api) => {
+    schemas.push(schema);
     app.post(`/api/${schema.module}`, async (req, res) => {
       const { type } = req.body;
       const actionSchema = schema.actions[type];
