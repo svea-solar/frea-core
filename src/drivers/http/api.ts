@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Close, HttpApi, AddModule, ModuleSchema, Api } from "./types";
+import { fromSchemas } from "./from_schemas";
 
 type CreateApi = (args: { port: string }) => Promise<HttpApi>;
 
@@ -14,7 +15,7 @@ export const createApi: CreateApi = ({ port }) => {
   app.use(bodyParser.json());
 
   app.get("/api", (_, res) => {
-    res.json(schemas);
+    res.send(fromSchemas(schemas));
   });
 
   app.get("/health", (_, res) => res.json({ status: "ready" }));

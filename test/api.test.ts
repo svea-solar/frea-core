@@ -21,15 +21,11 @@ const setupModule = (api: HttpApi) => {
   };
 
   api.addModule(schema, moduleApi);
-
-  return {
-    schema,
-  };
 };
 
 test("schemas", async () => {
   const api = await createApi({ port });
-  const { schema } = setupModule(api);
+  setupModule(api);
 
   const result = (
     await axios({
@@ -39,7 +35,18 @@ test("schemas", async () => {
   ).data;
 
   await api.close();
-  expect(result).toEqual([schema]);
+  expect(result).toEqual(`<pre>[
+  {
+    &quot;module&quot;: &quot;test&quot;,
+    &quot;actions&quot;: {
+      &quot;do_test_action&quot;: {
+        &quot;args&quot;: [
+          &quot;argKey&quot;
+        ]
+      }
+    }
+  }
+]</pre>`);
 });
 
 test("close:failed", async () => {
@@ -70,7 +77,7 @@ test("addModule and act:failed", async () => {
   await api.close();
 
   expect(result).toEqual({
-    type: "frea_api.http.add_module:failed",
+    type: "frea_api.http.handle_action:failed",
     reason: "action_type_not_supported",
     actionType: "##missing_action_type##",
   });
