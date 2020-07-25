@@ -35,18 +35,9 @@ test("schemas", async () => {
   ).data;
 
   await api.close();
-  expect(result).toEqual(`<pre>[
-  {
-    &quot;module&quot;: &quot;test&quot;,
-    &quot;actions&quot;: {
-      &quot;do_test_action&quot;: {
-        &quot;args&quot;: [
-          &quot;argKey&quot;
-        ]
-      }
-    }
-  }
-]</pre>`);
+  expect(result).toEqual([
+    { actions: { do_test_action: { args: ["argKey"] } }, module: "test" },
+  ]);
 });
 
 test("close:failed", async () => {
