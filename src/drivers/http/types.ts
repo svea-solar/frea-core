@@ -1,4 +1,4 @@
-import { Result } from "types";
+import { Result } from "../../types";
 
 export type ActionArgsSchema<
   TAction extends (args: any) => Result<any, any>
