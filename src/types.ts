@@ -3,10 +3,11 @@ export type Ok<T> = {
   data: T;
 };
 
-export type Err<E> = {
+export type BaseErr = { reason: string };
+
+export type Err<E extends BaseErr> = {
   status: "failed";
-  reason: "invalid_message" | "not_authorized" | "unknown";
-  errors: E[];
+  error: E;
 };
 
-export type Result<T, E> = Promise<Ok<T> | Err<E>>;
+export type Result<T, E extends BaseErr> = Promise<Ok<T> | Err<E>>;
