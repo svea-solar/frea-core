@@ -1,7 +1,9 @@
-export type Ok<T> = {
-  status: "succeeded";
-  data: T;
-};
+export type Ok<T> = T extends void
+  ? { status: "succeeded" }
+  : {
+      status: "succeeded";
+      data: T;
+    };
 
 export type BaseErr = { reason: string };
 
