@@ -17,7 +17,9 @@ export const createApi: CreateApi = ({ port }) => {
     res.json(schemas);
   });
 
-  app.get("/health", (_, res) => res.json({ status: "ready" }));
+  app.get("/live", (_, res) => res.status(200).send());
+
+  app.get("/ready", (_, res) => res.status(200).send());
 
   app.get("/", (_, res) => res.json({ status: "ready" }));
 
