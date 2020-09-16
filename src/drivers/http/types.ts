@@ -1,12 +1,16 @@
-import { Result } from "../../types";
+import { ApiResult, Result } from "../../types";
 
 export type ActionArgsSchema<
-  TAction extends (args: any) => Result<any, any>
-> = TAction extends (args: infer TArgs) => Result<any, any>
+  TAction extends (args: any) => ApiResult<any, any> | Result<any, any>
+> = TAction extends (
+  args: infer TArgs
+) => ApiResult<any, any> | Result<any, any>
   ? (keyof TArgs)[]
   : never;
 
-export type Api = { [k: string]: (args: any) => Result<any, any> };
+export type Api = {
+  [k: string]: (args: any) => ApiResult<any, any> | Result<any, any>;
+};
 
 export type ActionsSchema<TApi extends Api> = {
   [K in keyof TApi]: {
