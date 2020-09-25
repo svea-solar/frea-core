@@ -1,16 +1,25 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import helmet from "helmet";
 import { Close, HttpApi, AddModule, ModuleSchema, Api } from "./types";
 
-type CreateApi = (args: { port: string }) => Promise<HttpApi>;
+type CreateApi = (args: {
+  port: string;
+  corsList: string[];
+}) => Promise<HttpApi>;
 
-export const createApi: CreateApi = ({ port }) => {
+export const createApi: CreateApi = ({ port, corsList }) => {
   const app = express();
 
   let schemas: ModuleSchema<Api>[] = [];
 
-  app.use(cors());
+  const corsOptions = {
+    origin: corsList,
+  };
+
+  app.use(cors(corsOptions));
+  app.use(helmet());
   app.use(bodyParser.json());
 
   app.get("/api", (_, res) => {
