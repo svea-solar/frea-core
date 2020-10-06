@@ -12,6 +12,20 @@ Drivers adapts your input/output to specific formats.
 
 The http driver hooks your business logic (simply called `API`) to express.js routes.
 
+*Status checks:*
+
+All status checks are `GET` calls.
+
+`/`: the status route. You get a JSON object containing the server status.
+
+`/live`: returns `200` if the server is live.
+
+`/ready`: returns `200` if the server is ready. This still needs work.
+
+*API*
+
+`/api`: By calling `addModule(moduleSchema, moduleInstance)`, you add a route based on the module's name as given in the schema. All args listed in the schema will be sent to the module action handler. `token` and `type` will always be sent as arguments as well.
+
 ### Utilities
 
 #### getEnv
