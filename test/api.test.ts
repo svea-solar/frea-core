@@ -1,5 +1,5 @@
-import { createApi } from "../src/drivers/http/api";
-import { ModuleSchema, HttpApi } from "../src/drivers/http/types";
+import { createApi } from "../src/io/http/api";
+import { ModuleSchema, HttpApi } from "../src/io/http/types";
 import axios from "axios";
 
 const port = "5000";
@@ -24,7 +24,7 @@ const setupModule = (api: HttpApi) => {
 };
 
 test("schemas", async () => {
-  const api = await createApi({ port });
+  const api = await createApi({ port, corsList: [`http://localhost:${port}`] });
   setupModule(api);
 
   const result = (
@@ -41,7 +41,7 @@ test("schemas", async () => {
 });
 
 test("close:failed", async () => {
-  const api = await createApi({ port });
+  const api = await createApi({ port, corsList: [`http://localhost:${port}`] });
 
   await api.close();
   const result = await api.close().catch((error) => error);
@@ -53,7 +53,7 @@ test("close:failed", async () => {
 });
 
 test("addModule and act:failed", async () => {
-  const api = await createApi({ port });
+  const api = await createApi({ port, corsList: [`http://localhost:${port}`] });
 
   setupModule(api);
 
@@ -75,7 +75,7 @@ test("addModule and act:failed", async () => {
 });
 
 test("addModule and act:succeeded", async () => {
-  const api = await createApi({ port });
+  const api = await createApi({ port, corsList: [`http://localhost:${port}`] });
 
   setupModule(api);
 
