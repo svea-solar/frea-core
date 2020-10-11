@@ -19,8 +19,6 @@ export const createEventStore: Create = async ({ schemaName }) => {
 
   if (db === undefined) {
     db = Pgp()({
-      // TODO: is this needed when run via Heroku?
-      // ssl: { rejectUnauthorized: false },
       connectionString: dbUri,
     });
   }
@@ -28,7 +26,7 @@ export const createEventStore: Create = async ({ schemaName }) => {
   // Ensure DB connection.
   await db.query("select 1");
 
-  console.log("event-store db connected.");
+  console.log(`Event store ${schemaName} connected.`);
 
   // Migrations
   await db.none(/*sql*/ `CREATE SCHEMA IF NOT EXISTS $<name:name>`, {
@@ -50,7 +48,7 @@ export const createEventStore: Create = async ({ schemaName }) => {
     }
   );
 
-  console.log("event-store db migrated.");
+  console.log(`Event store ${schemaName} migrated.`);
 
   return createMod({ db, schemaName });
 };
