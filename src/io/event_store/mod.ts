@@ -1,8 +1,16 @@
 import { IDatabase } from "pg-promise";
 import { EventStoreApi } from "./types";
 
+type DbRow<TEvent> = {
+  id: number;
+  uuid: string;
+  type: string;
+  event: TEvent;
+  inserted_at: string;
+};
+
 type Create = <TEvent>(args: {
-  db: IDatabase<{}>;
+  db: IDatabase<unknown>;
   schemaName: string;
 }) => EventStoreApi<TEvent>;
 
@@ -11,24 +19,49 @@ export const createMod: Create = ({ db, schemaName }) => {
     append: (event) =>
       db
         .none(
-          /*sql*/ `INSERT INTO $<table:name>.events
+          /*sql*/ `INSERT INTO $<schemaName:name>.events
         (type, event)
         VALUES
         ($<event.type>, $<event>)`,
           {
-            table: `${schemaName}`,
+            schemaName,
             event,
           }
         )
         .then(() => {}),
     fetchAll: () =>
       db
-        .manyOrNone(
-          /*sql*/ `SELECT * FROM $<table:name>.events ORDER BY inserted_at ASC`,
+        .manyOrNone<DbRow<any>>(
+          /*sql*/ `SELECT * FROM $<schemaName:name>.events ORDER BY inserted_at ASC`,
           {
-            table: `${schemaName}`,
+            schemaName,
           }
         )
-        .then((dbRows) => dbRows.map((dbRow) => dbRow.event)),
+        .then((dbRows) =>
+          dbRows.map((dbRow) => ({
+            id: dbRow.id,
+            uuid: dbRow.uuid,
+            event: dbRow.event,
+            insertedAt: dbRow.inserted_at,
+          }))
+        ),
+
+    fetchById: (uuid) =>
+      db
+        .manyOrNone<DbRow<any>>(
+          /*sql*/ `SELECT * FROM $<schemaName:name>.events WHERE uuid = $<uuid> ORDER BY inserted_at ASC`,
+          {
+            schemaName,
+            uuid,
+          }
+        )
+        .then((dbRows) =>
+          dbRows.map((dbRow) => ({
+            id: dbRow.id,
+            uuid: dbRow.uuid,
+            event: dbRow.event,
+            insertedAt: dbRow.inserted_at,
+          }))
+        ),
   };
 };

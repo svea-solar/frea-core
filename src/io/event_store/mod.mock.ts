@@ -11,5 +11,6 @@ export const createModMock: Create = () => {
       return Promise.resolve();
     },
     fetchAll: () => Promise.resolve(store),
+    fetchById: () => Promise.reject("Not implemented."),
   };
 };
