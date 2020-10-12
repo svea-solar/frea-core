@@ -42,8 +42,10 @@ export const createApi: CreateApi = ({ port, corsList }) => {
       if (!actionSchema) {
         res.json({
           ok: false,
-          reason: "action_type_not_supported",
-          actionType: type,
+          error: {
+            reason: "action_type_not_supported",
+            actionType: type,
+          },
         });
         return;
       }
@@ -72,7 +74,7 @@ export const createApi: CreateApi = ({ port, corsList }) => {
       new Promise<void>((res, rej) => {
         server.close((error) => {
           if (error) {
-            rej({ type: "failed", reason: "ERR_SERVER_NOT_RUNNING" });
+            rej({ ok: false, error: { reason: "server_not_running" } });
             return;
           }
 
