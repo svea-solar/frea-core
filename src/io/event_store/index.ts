@@ -1,4 +1,4 @@
-import { getEnv } from "get_env";
+import { getEnv } from "../../get_env";
 import Pgp from "pg-promise";
 import { createMod } from "./mod";
 import { EventStoreApi } from "./types";
