@@ -2,7 +2,7 @@ import { EventStoreApi } from "./types";
 
 type Create = <TEvent>() => EventStoreApi<TEvent>;
 
-export const createModMock: Create = () => {
+export const createEventStoreMock: Create = () => {
   const store: any[] = [];
 
   return {
@@ -11,6 +11,6 @@ export const createModMock: Create = () => {
       return Promise.resolve();
     },
     fetchAll: () => Promise.resolve(store),
-    fetchById: () => Promise.reject("Not implemented."),
+    fetchByUuid: () => Promise.reject("Not implemented."),
   };
 };
