@@ -5,7 +5,7 @@ import Pgp from "pg-promise";
 import { createOutgoing } from "./outgoing";
 export * from "./types";
 
-let db: Pgp.IDatabase<{}>;
+let db: Pgp.IDatabase<unknown>;
 
 export const createStore = async <TEvent>({ module }: { module: string }) => {
   const dbUri = getEnv("DATABASE_URL");
