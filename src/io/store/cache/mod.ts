@@ -7,19 +7,28 @@ type Create = (args: { module: string; db: IDatabase<unknown> }) => CacheStore;
 
 export const createMod: Create = ({ module, db }) => {
   const insert: Insert = async ({ data }) => {
-    await db.manyOrNone<DbRow>(
-      /*sql*/ `INSERT INTO $<module:name>.cache
+    try {
+      await db.manyOrNone<DbRow>(
+        /*sql*/ `INSERT INTO $<module:name>.cache
       (uuid, data)
       VALUES
       ($<uuid>, $<data>)`,
-      {
-        module,
-        uuid: data.uuid,
-        data,
-      }
-    );
+        {
+          module,
+          uuid: data.uuid,
+          data,
+        }
+      );
 
-    return { ok: true };
+      return { ok: true };
+    } catch (error) {
+      if (error.code === "23505") {
+        return { ok: false, error: { reason: "cache_item_already_exists" } };
+      }
+
+      console.error(error);
+      return { ok: false, error: { reason: "unknown" } };
+    }
   };
 
   const get: Get = async ({ uuid }) => {

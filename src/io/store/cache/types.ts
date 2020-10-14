@@ -3,7 +3,7 @@ import { ApiResult } from "../../../types";
 export type InsertData = void;
 
 export type InsertError = {
-  reason: "unknown";
+  reason: "unknown" | "cache_item_already_exists";
 };
 
 export type Insert = (args: {
