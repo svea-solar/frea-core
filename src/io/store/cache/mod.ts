@@ -1,33 +1,63 @@
+import { IDatabase } from "pg-promise";
 import { Get, CacheStore, Insert, Update } from "./types";
 
-type Create = () => CacheStore;
+type DbRow = { data: any; uuid: string; updated_at: string };
 
-export const createMod: Create = () => {
-  const insert: Insert = async () => {
+type Create = (args: { module: string; db: IDatabase<unknown> }) => CacheStore;
+
+export const createMod: Create = ({ module, db }) => {
+  const insert: Insert = async ({ data }) => {
+    await db.manyOrNone<DbRow>(
+      /*sql*/ `INSERT INTO $<module:name>.cache
+      (uuid, data)
+      VALUES
+      ($<uuid>, $<data>)`,
+      {
+        module,
+        uuid: data.uuid,
+        data,
+      }
+    );
+
+    return { ok: true };
+  };
+
+  const get: Get = async ({ uuid }) => {
+    const dbResult = await db.oneOrNone<DbRow>(
+      /*sql*/ `SELECT * FROM $<module:name>.cache WHERE uuid = $<uuid>`,
+      {
+        module,
+        uuid,
+      }
+    );
+
+    if (!dbResult) {
+      return { ok: false, error: { reason: "cache_item_not_found" } };
+    }
+
     return {
-      ok: false,
-      error: {
-        reason: "unknown",
+      ok: true,
+      data: {
+        uuid: dbResult.uuid,
+        data: dbResult.data,
+        updatedAt: dbResult.updated_at,
       },
     };
   };
 
-  const get: Get = async () => {
-    return {
-      ok: false,
-      error: {
-        reason: "unknown",
-      },
-    };
-  };
+  const update: Update = async ({ data }) => {
+    await db.manyOrNone<DbRow>(
+      /*sql*/ `UPDATE $<module:name>.cache
+      SET data = $<data>
+      WHERE uuid = $<uuid>`,
+      {
+        module,
+        uuid: data.uuid,
+        data,
+      }
+    );
 
-  const update: Update = async () => {
-    return {
-      ok: false,
-      error: {
-        reason: "unknown",
-      },
-    };
+    return { ok: true };
   };
 
   return {

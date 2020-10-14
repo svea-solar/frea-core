@@ -14,7 +14,7 @@ export const createCache: Create = async ({ module, db }) => {
     /*sql*/ `CREATE TABLE IF NOT EXISTS $<module:name>.cache(
         "uuid" uuid PRIMARY KEY NOT NULL,
         "data" jsonb NOT NULL,
-        "inserted_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
+        "updated_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
       )`,
     {
       module,
@@ -23,5 +23,5 @@ export const createCache: Create = async ({ module, db }) => {
 
   console.log(`Ensured that ${module} cache store exists.`);
 
-  return createMod();
+  return createMod({ module, db });
 };
