@@ -1,2 +1,2 @@
-export * from "./event_store";
+export * from "./store/event";
 export * from "./http";
