@@ -12,7 +12,7 @@ type Create = (args: {
 export const createCache: Create = async ({ module, db }) => {
   await db.none(
     /*sql*/ `CREATE TABLE IF NOT EXISTS $<module:name>.cache(
-        "id" serial PRIMARY KEY NOT NULL,
+        "uuid" uuid PRIMARY KEY NOT NULL,
         "data" jsonb NOT NULL,
         "inserted_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
       )`,

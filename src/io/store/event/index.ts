@@ -2,7 +2,6 @@ import { IDatabase } from "pg-promise";
 import { createMod } from "./mod";
 import { EventStoreApi } from "./types";
 export * from "./types";
-export * from "./mock";
 
 type Create = <TEvent>(args: {
   module: string;

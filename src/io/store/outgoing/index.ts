@@ -1,15 +1,15 @@
 import { IDatabase } from "pg-promise";
 import { createMod } from "./mod";
-import { CacheStore } from "./types";
+import { OutgoingStore } from "./types";
 
 export * from "./types";
 
 type Create = (args: {
   module: string;
   db: IDatabase<unknown>;
-}) => Promise<CacheStore>;
+}) => Promise<OutgoingStore>;
 
-export const createCache: Create = async ({ module, db }) => {
+export const createOutgoing: Create = async ({ module, db }) => {
   await db.none(
     /*sql*/ `CREATE TABLE IF NOT EXISTS $<module:name>.outgoing(
         "id" serial PRIMARY KEY NOT NULL,

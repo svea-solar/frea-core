@@ -26,6 +26,7 @@ export const createStore = async <TEvent>({ module }: { module: string }) => {
 
   const event = await createEventStore<TEvent>({ module, db });
   const cache = await createCache({ module, db });
+  const;
 
   return { event, cache, db };
 };

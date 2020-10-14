@@ -1,8 +1,17 @@
-import { Get, CacheStore } from "./types";
+import { Add, Get, OutgoingStore, Remove } from "./types";
 
-type Create = () => CacheStore;
+type Create = () => OutgoingStore;
 
 export const createMod: Create = () => {
+  const add: Add = async () => {
+    return {
+      ok: false,
+      error: {
+        reason: "unknown",
+      },
+    };
+  };
+
   const get: Get = async () => {
     return {
       ok: false,
@@ -12,7 +21,18 @@ export const createMod: Create = () => {
     };
   };
 
+  const remove: Remove = async () => {
+    return {
+      ok: false,
+      error: {
+        reason: "unknown",
+      },
+    };
+  };
+
   return {
+    add,
     get,
+    remove,
   };
 };
