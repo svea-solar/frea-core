@@ -2,6 +2,7 @@ import { createCache } from "./cache";
 import { createEventStore } from "./event";
 import { getEnv } from "../../get_env";
 import Pgp from "pg-promise";
+import { createOutgoing } from "./outgoing";
 export * from "./types";
 
 let db: Pgp.IDatabase<{}>;
@@ -26,7 +27,7 @@ export const createStore = async <TEvent>({ module }: { module: string }) => {
 
   const event = await createEventStore<TEvent>({ module, db });
   const cache = await createCache({ module, db });
-  const;
+  const outgoing = await createOutgoing({ module, db });
 
-  return { event, cache, db };
+  return { event, cache, outgoing, db };
 };
