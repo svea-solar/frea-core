@@ -4,6 +4,7 @@ import { getEnv } from "../../get_env";
 import Pgp from "pg-promise";
 import { createOutgoing } from "./outgoing";
 export * from "./types";
+export * from "./event/types";
 
 let db: Pgp.IDatabase<unknown>;
 
