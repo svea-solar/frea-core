@@ -6,7 +6,8 @@ export type ActionArgsSchema<
     ctx: any
   ) => ApiResult<any, any> | Result<any, any>
 > = TAction extends (
-  args: infer TArgs
+  args: infer TArgs,
+  ctx: any
 ) => ApiResult<any, any> | Result<any, any>
   ? (keyof TArgs)[]
   : never;
