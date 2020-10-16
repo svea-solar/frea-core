@@ -11,7 +11,7 @@ import {
   Api,
   ApiContext,
 } from "./types";
-import { createJwtAdapter } from "../../";
+import { createJwtAdapter, TokenData } from "../../";
 
 type CreateApi = (args: {
   port: string;
@@ -66,7 +66,20 @@ export const createApi: CreateApi = ({ port, corsList }) => {
       }, {} as any);
 
       const clientIp = requestIp.getClientIp(req);
-      const token = req.body.token;
+      const tokenString = req.body.token;
+
+      let token: TokenData | void;
+
+      if (!actionSchema.public) {
+        const jwtResult = await jwt.verify({ token: tokenString });
+
+        if (!jwtResult.ok) {
+          res.json(jwtResult);
+          return;
+        }
+
+        token = jwtResult.data;
+      }
 
       const ctx: ApiContext = {
         type,
@@ -74,15 +87,6 @@ export const createApi: CreateApi = ({ port, corsList }) => {
         clientIp: clientIp === null ? undefined : clientIp,
         clientCid: req.body.clientCid,
       };
-
-      if (!actionSchema.public) {
-        const jwtResult = await jwt.verify({ token });
-
-        if (!jwtResult.ok) {
-          res.json(jwtResult);
-          return;
-        }
-      }
 
       const result = await api[type](args, ctx);
 
