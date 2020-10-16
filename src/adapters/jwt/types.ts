@@ -5,7 +5,7 @@ export type TokenData = {
 };
 
 export type VerifyError = {
-  reason: "verification_failed";
+  reason: "token_verification_failed";
 };
 
 export type Verify = (args: {
@@ -15,7 +15,7 @@ export type Verify = (args: {
 export type SignData = string;
 
 export type SignError = {
-  reason: "sign_failed";
+  reason: "token_sign_failed";
 };
 
 export type Sign = (args: {

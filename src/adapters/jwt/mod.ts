@@ -14,7 +14,7 @@ export const createApi: CreateApi = ({ secret }) => {
       return {
         ok: false,
         error: {
-          reason: "verification_failed",
+          reason: "token_verification_failed",
         },
       };
     }
@@ -26,7 +26,7 @@ export const createApi: CreateApi = ({ secret }) => {
         if (err) {
           return res({
             ok: false,
-            error: { reason: "sign_failed" },
+            error: { reason: "token_sign_failed" },
           });
         }
 

@@ -1,3 +1,4 @@
+import { JwtAdapter } from "adapters";
 import { ApiResult, Result } from "../../types";
 
 export type ActionArgsSchema<
@@ -29,6 +30,7 @@ export type Api = {
 export type ActionsSchema<TApi extends Api> = {
   [K in keyof TApi]: {
     args: ActionArgsSchema<TApi[K]>;
+    public?: true;
   };
 };
 
@@ -51,4 +53,5 @@ export type AddModule = <TApi extends Api>(
 export type HttpApi = {
   close: Close;
   addModule: AddModule;
+  jwt: JwtAdapter;
 };

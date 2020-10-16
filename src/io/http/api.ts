@@ -11,6 +11,7 @@ import {
   Api,
   ApiContext,
 } from "./types";
+import { createJwtAdapter } from "../../";
 
 type CreateApi = (args: {
   port: string;
@@ -19,6 +20,7 @@ type CreateApi = (args: {
 
 export const createApi: CreateApi = ({ port, corsList }) => {
   const app = express();
+  const jwt = createJwtAdapter();
 
   let schemas: ModuleSchema<Api>[] = [];
 
@@ -64,13 +66,23 @@ export const createApi: CreateApi = ({ port, corsList }) => {
       }, {} as any);
 
       const clientIp = requestIp.getClientIp(req);
+      const token = req.body.token;
 
       const ctx: ApiContext = {
         type,
-        token: req.body.token,
+        token,
         clientIp: clientIp === null ? undefined : clientIp,
         clientCid: req.body.clientCid,
       };
+
+      if (!actionSchema.public) {
+        const jwtResult = await jwt.verify({ token });
+
+        if (!jwtResult.ok) {
+          res.json(jwtResult);
+          return;
+        }
+      }
 
       const result = await api[type](args, ctx);
 
@@ -81,7 +93,7 @@ export const createApi: CreateApi = ({ port, corsList }) => {
   return new Promise<HttpApi>((resolve) => {
     const server = app.listen(port, () => {
       console.log(`Server started on port ${port}.`);
-      resolve({ close, addModule });
+      resolve({ close, addModule, jwt });
     });
 
     const close: Close = () =>
