@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
+import requestIp from "request-ip";
 import { Close, HttpApi, AddModule, ModuleSchema, Api } from "./types";
 
 type CreateApi = (args: {
@@ -58,7 +59,11 @@ export const createApi: CreateApi = ({ port, corsList }) => {
         { type } as any
       );
 
-      const result = await api[type](args);
+      const ctx = {
+        clientIp: requestIp.getClientIp(req),
+      };
+
+      const result = await api[type](args, ctx);
 
       res.json(result);
     });
