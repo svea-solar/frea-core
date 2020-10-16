@@ -3,7 +3,14 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
 import requestIp from "request-ip";
-import { Close, HttpApi, AddModule, ModuleSchema, Api } from "./types";
+import {
+  Close,
+  HttpApi,
+  AddModule,
+  ModuleSchema,
+  Api,
+  ApiContext,
+} from "./types";
 
 type CreateApi = (args: {
   port: string;
@@ -51,16 +58,18 @@ export const createApi: CreateApi = ({ port, corsList }) => {
         return;
       }
 
-      const args = actionSchema.args.reduce(
-        (acc, val) => {
-          acc[val] = req.body[val];
-          return acc;
-        },
-        { type } as any
-      );
+      const args = actionSchema.args.reduce((acc, val) => {
+        acc[val] = req.body[val];
+        return acc;
+      }, {} as any);
 
-      const ctx = {
-        clientIp: requestIp.getClientIp(req),
+      const clientIp = requestIp.getClientIp(req);
+
+      const ctx: ApiContext = {
+        type,
+        token: req.body.token,
+        clientIp: clientIp === null ? undefined : clientIp,
+        clientCid: req.body.clientCid,
       };
 
       const result = await api[type](args, ctx);

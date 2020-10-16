@@ -13,7 +13,10 @@ export type ActionArgsSchema<
   : never;
 
 export type ApiContext = {
-  clientIp: string | null;
+  type: string;
+  token: any;
+  clientCid?: string;
+  clientIp?: string;
 };
 
 export type Api = {
