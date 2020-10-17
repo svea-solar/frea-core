@@ -4,13 +4,14 @@ _Build modular TypeScript Node.js services._
 
 ## What's included in the box?
 
-### Drivers
+### IO mod
 
-Drivers adapts your input/output to specific formats.
+IO mod(ule)s offer a way for your app to interact with the real world.
+These should be passed as arguments into your app's mods.
 
-#### http
+#### io/http
 
-The http driver hooks your business logic (simply called `API`) to express.js routes.
+The http IO mod hooks your mod actions to express.js routes.
 
 *Status checks:*
 
@@ -20,11 +21,11 @@ All status checks are `GET` calls.
 
 `/live`: returns `200` if the server is live.
 
-`/ready`: returns `200` if the server is ready. This still needs work.
+`/ready`: returns `200` if the server is ready. WIP.
 
 *API*
 
-`/api`: By calling `addModule(moduleSchema, moduleInstance)`, you add a route based on the module's name as given in the schema. All args listed in the schema will be sent to the module action handler. `token` and `type` will always be sent as arguments as well.
+`/api`: By calling `addModule(modSchema, modInstance)`, you add a route based on the module's name as given in the schema. All args listed in the schema will be sent to the module action handler. A decoded `token`, an action `type`, and `clientCid` will always be sent as arguments as well in a `ctx` object as the second argument to the action handler.
 
 ### Utilities
 
@@ -36,15 +37,15 @@ We include a `getEnv(key: string): string` function that takes an environment ke
 
 #### Api
 
-Each function in an `Api` will take a property bag called `args`, and return a `Result` type.
+Each function in an `Api` will take a property bag called `args` as first argument, and `ctx` as the second. It returns an `ApiResult` type.
 
 #### ActionSchema<TApi extends Api>
   
-Takes an `API`, and makes sure that the schema includes the functions from the `API`, and does some type checking on the `args` (you can only specify arguments that exist in the `API`, but it's possible to miss one by mistake).
+Takes an `API`, and makes sure that the schema includes the functions from the `API`, and does some type checking on the `args`. You can only specify arguments that exist in the `API`, but it's possible to miss one by mistake. It only checks shallow arguments.
 
-#### Result<T, E>
+#### ApiResult<T, E>
 
-A type that can be either an `Ok<T>` or `Err<E>`, wrapped in a `Promise`. This should be the type that your API functions return.
+A type that can be either an `ApiOk<T>` or `ApiErr<E>`, wrapped in a `Promise`. This should be the type that your API functions return.
 
 ####
 
