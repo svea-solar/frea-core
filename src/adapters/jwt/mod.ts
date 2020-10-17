@@ -2,12 +2,12 @@ import jwt from "jsonwebtoken";
 
 import { JwtAdapter, Sign, TokenData, Verify } from "./types";
 
-type CreateApi = (args: { secret: string }) => JwtAdapter;
+type Create = (args: { jwtSecret: string }) => JwtAdapter;
 
-export const createApi: CreateApi = ({ secret }) => {
+export const createMod: Create = ({ jwtSecret }) => {
   const verify: Verify = async ({ token }) => {
     try {
-      const tokenData = jwt.verify(token, secret) as TokenData;
+      const tokenData = jwt.verify(token, jwtSecret) as TokenData;
 
       return { ok: true, data: tokenData };
     } catch (e) {
@@ -22,7 +22,7 @@ export const createApi: CreateApi = ({ secret }) => {
 
   const sign: Sign = async ({ data }) =>
     new Promise(async (res) => {
-      jwt.sign(data, secret, async (err, token) => {
+      jwt.sign(data, jwtSecret, async (err, token) => {
         if (err) {
           return res({
             ok: false,

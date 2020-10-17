@@ -1,11 +1,9 @@
 import { JwtAdapter } from "./types";
-import { createApi } from "./mod";
-import { getEnv } from "../../";
+import { createMod } from "./mod";
 export * from "./types";
 
-type Create = () => JwtAdapter;
+type Create = (args: { jwtSecret: string }) => JwtAdapter;
 
-export const createJwtAdapter: Create = () => {
-  const secret = getEnv("JWT_ADAPTER_SECRET");
-  return createApi({ secret });
+export const createJwtAdapter: Create = ({ jwtSecret }) => {
+  return createMod({ jwtSecret });
 };
