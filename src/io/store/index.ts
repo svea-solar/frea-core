@@ -1,6 +1,5 @@
 import { createCache } from "./cache";
 import { createEventStore } from "./event";
-import { getEnv } from "../../get_env";
 import Pgp from "pg-promise";
 import { createOutgoing } from "./outgoing";
 export * from "./types";
@@ -8,9 +7,13 @@ export * from "./event/types";
 
 let db: Pgp.IDatabase<unknown>;
 
-export const createStore = async <TEvent>({ module }: { module: string }) => {
-  const dbUri = getEnv("DATABASE_URL");
-
+export const createStore = async <TEvent>({
+  module,
+  dbUri,
+}: {
+  module: string;
+  dbUri: string;
+}) => {
   if (db === undefined) {
     db = Pgp()({
       connectionString: dbUri,
