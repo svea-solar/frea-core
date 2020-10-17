@@ -1,15 +1,16 @@
-import { getEnv } from "../../get_env";
-import { createApi } from "./api";
-import { HttpApi } from "./types";
+import { JwtAdapter } from "adapters";
+import { createMod } from "./mod";
+import { HttpMod } from "./types";
 export * from "./types";
 
-type Create = () => Promise<HttpApi>;
-
-export const createHttp: Create = () => {
-  const port = getEnv("HTTP_DRIVER_PORT");
-  const corsList = getEnv("HTTP_DRIVER_CORS_LIST").split(",");
-
-  const api = createApi({ port, corsList });
-
-  return api;
+export const createHttpIo = <TToken>({
+  jwt,
+  port,
+  corsList,
+}: {
+  jwt: JwtAdapter<TToken>;
+  port: string;
+  corsList: string[];
+}): Promise<HttpMod> => {
+  return createMod({ port, corsList, jwt });
 };
