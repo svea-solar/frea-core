@@ -5,22 +5,24 @@ import helmet from "helmet";
 import requestIp from "request-ip";
 import {
   Close,
-  HttpApi,
+  HttpMod,
   AddModule,
   ModuleSchema,
   Api,
   ApiContext,
 } from "./types";
-import { createJwtAdapter, TokenData } from "../../";
+import { JwtAdapter } from "adapters";
 
-type CreateApi = (args: {
+export const createMod = <TToken extends {}>({
+  port,
+  corsList,
+  jwt,
+}: {
+  jwt: JwtAdapter<TToken>;
   port: string;
   corsList: string[];
-}) => Promise<HttpApi>;
-
-export const createApi: CreateApi = ({ port, corsList }) => {
+}): Promise<HttpMod> => {
   const app = express();
-  const jwt = createJwtAdapter();
 
   let schemas: ModuleSchema<Api>[] = [];
 
@@ -68,10 +70,10 @@ export const createApi: CreateApi = ({ port, corsList }) => {
       const clientIp = requestIp.getClientIp(req);
       const tokenString = req.body.token;
 
-      let token: TokenData | void;
+      let token;
 
       if (!actionSchema.public) {
-        const jwtResult = await jwt.verify({ token: tokenString });
+        const jwtResult = await jwt.verify(tokenString);
 
         if (!jwtResult.ok) {
           res.json(jwtResult);
@@ -94,10 +96,10 @@ export const createApi: CreateApi = ({ port, corsList }) => {
     });
   };
 
-  return new Promise<HttpApi>((resolve) => {
+  return new Promise<HttpMod>((resolve) => {
     const server = app.listen(port, () => {
       console.log(`Server started on port ${port}.`);
-      resolve({ close, addModule, jwt });
+      resolve({ close, addModule });
     });
 
     const close: Close = () =>

@@ -1,15 +1,8 @@
-import { JwtAdapter } from "adapters";
-import { ApiResult, Result } from "../../types";
+import { ApiResult } from "../../types";
 
 export type ActionArgsSchema<
-  TAction extends (
-    args: any,
-    ctx: any
-  ) => ApiResult<any, any> | Result<any, any>
-> = TAction extends (
-  args: infer TArgs,
-  ctx: any
-) => ApiResult<any, any> | Result<any, any>
+  TAction extends (args: any, ctx: any) => ApiResult<any, any>
+> = TAction extends (args: infer TArgs, ctx: any) => ApiResult<any, any>
   ? (keyof TArgs)[]
   : never;
 
@@ -21,10 +14,7 @@ export type ApiContext = {
 };
 
 export type Api = {
-  [k: string]: (
-    args: any,
-    ctx: ApiContext
-  ) => ApiResult<any, any> | Result<any, any>;
+  [k: string]: (args: any, ctx: ApiContext) => ApiResult<any, any>;
 };
 
 export type ActionsSchema<TApi extends Api> = {
@@ -50,8 +40,7 @@ export type AddModule = <TApi extends Api>(
   api: TApi
 ) => void;
 
-export type HttpApi = {
+export type HttpMod = {
   close: Close;
   addModule: AddModule;
-  jwt: JwtAdapter;
 };
