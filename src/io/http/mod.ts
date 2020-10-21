@@ -56,7 +56,7 @@ export const createMod = <TToken extends {}>({
           ok: false,
           error: {
             reason: "action_type_not_supported",
-            actionType: type,
+            actionType: `${type}`,
           },
         });
         return;
