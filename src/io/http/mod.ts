@@ -12,6 +12,7 @@ import {
   ApiContext,
 } from "./types";
 import { JwtAdapter } from "adapters";
+import { ApiErr } from "../../";
 
 export const createMod = <TToken extends {}>({
   port,
@@ -82,17 +83,29 @@ export const createMod = <TToken extends {}>({
 
         token = jwtResult.data;
       }
-
+      const clientCid = req.body.clientCid;
       const ctx: ApiContext = {
         type,
         token,
         clientIp: clientIp === null ? undefined : clientIp,
-        clientCid: req.body.clientCid,
+        clientCid,
       };
 
-      const result = await api[type](args, ctx);
-
-      res.json(result);
+      try {
+        const result = await api[type](args, ctx);
+        return res.json(result);
+      } catch (error) {
+        console.error({
+          clientCid,
+          message: "Unhandled rejection caught by frea-core http.",
+        });
+        console.error(error);
+        const err: ApiErr<any> = {
+          ok: false,
+          error: { reason: "unknown", clientCid },
+        };
+        return res.json(err);
+      }
     });
   };
 
