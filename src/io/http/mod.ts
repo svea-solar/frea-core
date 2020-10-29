@@ -100,11 +100,13 @@ export const createMod = <TToken extends {}>({
         if (!result.ok) {
           console.error({
             "logging.googleapis.com/trace": cloudTraceContext,
+            clientCid,
             result,
           });
         } else {
           console.log({
             "logging.googleapis.com/trace": cloudTraceContext,
+            clientCid,
             result,
           });
         }
@@ -113,11 +115,12 @@ export const createMod = <TToken extends {}>({
       } catch (error) {
         const result: ApiErr<any> = {
           ok: false,
-          error: { reason: "http_io/unknown", clientCid },
+          error: { reason: "http_io/unknown" },
         };
 
         console.error({
           "logging.googleapis.com/trace": cloudTraceContext,
+          clientCid,
           result: result,
         });
         console.error(error);
