@@ -11,6 +11,6 @@ export const createHttpIo = <TToken>({
   jwt: JwtAdapter<TToken>;
   port: string;
   corsList: string[];
-}): Promise<HttpMod> => {
+}): HttpMod => {
   return createMod({ port, corsList, jwt });
 };

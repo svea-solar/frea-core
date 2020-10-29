@@ -70,6 +70,7 @@ export const createMod = <TToken extends {}>({
         return acc;
       }, {} as any);
 
+      const cloudTraceContext = req.header("X-Cloud-Trace-Context");
       const clientIp = requestIp.getClientIp(req);
       const tokenString = req.body.token;
 
@@ -95,18 +96,30 @@ export const createMod = <TToken extends {}>({
 
       try {
         const result = await api[type](args, ctx);
+
+        if (!result.ok) {
+          console.error({
+            cloudTraceContext,
+            result,
+          });
+        } else {
+          console.log({ cloudTraceContext, result });
+        }
+
         return res.json(result);
       } catch (error) {
+        const result: ApiErr<any> = {
+          ok: false,
+          error: { reason: "http_io/unknown", clientCid },
+        };
+
         console.error({
-          clientCid,
-          message: "Unhandled rejection caught by frea-core http.",
+          cloudTraceContext,
+          result: result,
         });
         console.error(error);
-        const err: ApiErr<any> = {
-          ok: false,
-          error: { reason: "unknown", clientCid },
-        };
-        return res.json(err);
+
+        return res.json(result);
       }
     });
   };
@@ -127,7 +140,7 @@ export const createMod = <TToken extends {}>({
     });
 
   const listen: Listen = () =>
-    new Promise<void>((res, rej) => {
+    new Promise<void>((res) => {
       server = app.listen(port, () => {
         console.log(`Server started on port ${port}.`);
         res();
