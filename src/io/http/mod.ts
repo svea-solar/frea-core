@@ -1,3 +1,4 @@
+import http from "http";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -10,6 +11,7 @@ import {
   ModuleSchema,
   Api,
   ApiContext,
+  Listen,
 } from "./types";
 import { JwtAdapter } from "adapters";
 import { ApiErr } from "../../";
@@ -22,7 +24,7 @@ export const createMod = <TToken extends {}>({
   jwt: JwtAdapter<TToken>;
   port: string;
   corsList: string[];
-}): Promise<HttpMod> => {
+}): HttpMod => {
   const app = express();
 
   let schemas: ModuleSchema<Api>[] = [];
@@ -68,6 +70,7 @@ export const createMod = <TToken extends {}>({
         return acc;
       }, {} as any);
 
+      const cloudTraceContext = req.header("X-Cloud-Trace-Context");
       const clientIp = requestIp.getClientIp(req);
       const tokenString = req.body.token;
 
@@ -93,38 +96,60 @@ export const createMod = <TToken extends {}>({
 
       try {
         const result = await api[type](args, ctx);
+
+        if (!result.ok) {
+          console.error({
+            cloudTraceContext,
+            result,
+          });
+        } else {
+          console.log({ cloudTraceContext, result });
+        }
+
         return res.json(result);
       } catch (error) {
+        const result: ApiErr<any> = {
+          ok: false,
+          error: { reason: "http_io/unknown", clientCid },
+        };
+
         console.error({
-          clientCid,
-          message: "Unhandled rejection caught by frea-core http.",
+          cloudTraceContext,
+          result: result,
         });
         console.error(error);
-        const err: ApiErr<any> = {
-          ok: false,
-          error: { reason: "unknown", clientCid },
-        };
-        return res.json(err);
+
+        return res.json(result);
       }
     });
   };
 
-  return new Promise<HttpMod>((resolve) => {
-    const server = app.listen(port, () => {
-      console.log(`Server started on port ${port}.`);
-      resolve({ close, addModule });
+  let server: http.Server;
+
+  const close: Close = () =>
+    new Promise<void>((res, rej) => {
+      if (!server)
+        return rej({ ok: false, error: { reason: "server_not_started" } });
+
+      server.close((error) => {
+        if (error)
+          return rej({ ok: false, error: { reason: "server_not_running" } });
+
+        res();
+      });
     });
 
-    const close: Close = () =>
-      new Promise<void>((res, rej) => {
-        server.close((error) => {
-          if (error) {
-            rej({ ok: false, error: { reason: "server_not_running" } });
-            return;
-          }
-
-          res();
-        });
+  const listen: Listen = () =>
+    new Promise<void>((res) => {
+      server = app.listen(port, () => {
+        console.log(`Server started on port ${port}.`);
+        res();
       });
-  });
+    });
+
+  return {
+    listen,
+    close,
+    addModule,
+  };
 };

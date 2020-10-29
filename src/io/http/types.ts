@@ -33,6 +33,8 @@ export type ActionSchema = {
   args: string[];
 };
 
+export type Listen = () => Promise<void>;
+
 export type Close = () => Promise<void>;
 
 export type AddModule = <TApi extends Api>(
@@ -41,6 +43,7 @@ export type AddModule = <TApi extends Api>(
 ) => void;
 
 export type HttpMod = {
+  listen: Listen;
   close: Close;
   addModule: AddModule;
 };
