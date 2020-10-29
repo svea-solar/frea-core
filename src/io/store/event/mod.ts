@@ -42,8 +42,8 @@ export const createMod: Create = ({ db, module }) => {
             insertedAt: dbRow.inserted_at,
           }))
         ),
-
-    fetchByUuid: (uuid) =>
+        clearAll: () => db.none(/*sql*/ `DELETE * FROM $<module:name>.events`),
+        fetchByUuid: (uuid) =>
       db
         .manyOrNone<DbRow<any>>(
           /*sql*/ `SELECT * FROM $<module:name>.events AS e WHERE e->>'uuid' = $<uuid> ORDER BY id ASC`,
