@@ -99,11 +99,14 @@ export const createMod = <TToken extends {}>({
 
         if (!result.ok) {
           console.error({
-            cloudTraceContext,
+            "logging.googleapis.com/trace": cloudTraceContext,
             result,
           });
         } else {
-          console.log({ cloudTraceContext, result });
+          console.log({
+            "logging.googleapis.com/trace": cloudTraceContext,
+            result,
+          });
         }
 
         return res.json(result);
@@ -114,7 +117,7 @@ export const createMod = <TToken extends {}>({
         };
 
         console.error({
-          cloudTraceContext,
+          "logging.googleapis.com/trace": cloudTraceContext,
           result: result,
         });
         console.error(error);
