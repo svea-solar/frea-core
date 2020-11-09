@@ -1,5 +1,9 @@
 import { ApiResult } from "../../types";
 
+export type Severity = "info" | "error"
+
+export type Log = (args:{mod:string,type:string, severity:Severity,traceId?:string,result:unknown,clientCid?:string,args:unknown}) => void
+
 export type ActionArgsSchema<
   TAction extends (args: any, ctx: any) => ApiResult<any, any>
 > = TAction extends (args: infer TArgs, ctx: any) => ApiResult<any, any>
