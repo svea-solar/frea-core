@@ -12,6 +12,7 @@ import {
   Api,
   ApiContext,
   Listen,
+  GetApi,
 } from "./types";
 import { JwtAdapter } from "adapters";
 import { ApiErr } from "../../";
@@ -150,9 +151,12 @@ export const createMod = <TToken extends {}>({
       });
     });
 
+  const  getApi:GetApi = () => schemas
+
   return {
     listen,
     close,
     addModule,
+    getApi
   };
 };
