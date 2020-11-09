@@ -13,6 +13,7 @@ import {
   ApiContext,
   Listen,
   GetApi,
+  Log,
 } from "./types";
 import { JwtAdapter } from "adapters";
 import { ApiErr } from "../../";
@@ -21,10 +22,12 @@ export const createMod = <TToken extends {}>({
   port,
   corsList,
   jwt,
+  log
 }: {
   jwt: JwtAdapter<TToken>;
   port: string;
   corsList: string[];
+  log:Log
 }): HttpMod => {
   const app = express();
 
@@ -68,7 +71,7 @@ export const createMod = <TToken extends {}>({
         return acc;
       }, {} as any);
 
-      const cloudTraceContext = req.header("X-Cloud-Trace-Context");
+      const traceId = req.header("X-Cloud-Trace-Context");
       const clientIp = requestIp.getClientIp(req);
       const tokenString = req.body.token;
 
@@ -96,16 +99,24 @@ export const createMod = <TToken extends {}>({
         const result = await api[type](args, ctx);
 
         if (!result.ok) {
-          console.error({
-            "logging.googleapis.com/trace": cloudTraceContext,
+          log({
+            mod: schema.module,
+            type,
+            severity:"error",
+            traceId,
             clientCid,
             result,
+            args
           });
         } else {
-          console.log({
-            "logging.googleapis.com/trace": cloudTraceContext,
+          log({
+            mod: schema.module,
+            type,
+            severity:"info",
+            traceId,
             clientCid,
             result,
+            args
           });
         }
 
@@ -113,15 +124,24 @@ export const createMod = <TToken extends {}>({
       } catch (error) {
         const result: ApiErr<any> = {
           ok: false,
-          error: { reason: "http_io/unknown" },
+          error: {
+            reason: "http_io/unknown",
+            code:error.code,
+            message:error.message,
+            stack:error.stack,
+            details:error.details
+          },
         };
 
-        console.error({
-          "logging.googleapis.com/trace": cloudTraceContext,
+        log({
+          mod: schema.module,
+          type,
+          severity:"error",
+          traceId,
           clientCid,
           result: result,
+          args
         });
-        console.error(error);
 
         return res.json(result);
       }
