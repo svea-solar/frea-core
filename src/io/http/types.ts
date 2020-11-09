@@ -42,8 +42,11 @@ export type AddModule = <TApi extends Api>(
   api: TApi
 ) => void;
 
+export type GetApi =()=> ModuleSchema<Api>[]
+
 export type HttpMod = {
   listen: Listen;
   close: Close;
   addModule: AddModule;
+  getApi:GetApi
 };

@@ -12,6 +12,7 @@ import {
   Api,
   ApiContext,
   Listen,
+  GetApi,
 } from "./types";
 import { JwtAdapter } from "adapters";
 import { ApiErr } from "../../";
@@ -37,9 +38,6 @@ export const createMod = <TToken extends {}>({
   app.use(helmet());
   app.use(bodyParser.json());
 
-  app.get("/api", (_, res) => {
-    res.json(schemas);
-  });
 
   app.get("/live", (_, res) => res.status(200).send());
 
@@ -153,9 +151,12 @@ export const createMod = <TToken extends {}>({
       });
     });
 
+  const  getApi:GetApi = () => schemas
+
   return {
     listen,
     close,
     addModule,
+    getApi
   };
 };
