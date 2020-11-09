@@ -37,9 +37,6 @@ export const createMod = <TToken extends {}>({
   app.use(helmet());
   app.use(bodyParser.json());
 
-  app.get("/api", (_, res) => {
-    res.json(schemas);
-  });
 
   app.get("/live", (_, res) => res.status(200).send());
 
