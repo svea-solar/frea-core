@@ -51,3 +51,12 @@ A type that can be either an `ApiOk<T>` or `ApiErr<E>`, wrapped in a `Promise`. 
 
 ## Tribute
 This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+
+## Releasing
+
+* Get latest from master branch.
+* `npm version minor`
+* `git push`
+* `git push --tags`
+* `npm publish`
+
