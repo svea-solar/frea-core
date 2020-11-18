@@ -22,12 +22,12 @@ export const createMod = <TToken extends {}>({
   port,
   corsList,
   jwt,
-  log
+  log,
 }: {
   jwt: JwtAdapter<TToken>;
   port: string;
   corsList: string[];
-  log:Log
+  log: Log;
 }): HttpMod => {
   const app = express();
 
@@ -40,7 +40,6 @@ export const createMod = <TToken extends {}>({
   app.use(cors(corsOptions));
   app.use(helmet());
   app.use(bodyParser.json());
-
 
   app.get("/live", (_, res) => res.status(200).send());
 
@@ -99,51 +98,65 @@ export const createMod = <TToken extends {}>({
         const result = await api[type](args, ctx);
 
         if (!result.ok) {
+          const resultWithoutInnerError = {
+            ...result,
+            error: { ...result.error, innerError: undefined },
+          };
+
           log({
             mod: schema.module,
             type,
-            severity:"error",
+            severity: "error",
             traceId,
             clientCid,
             result,
-            args
+            args,
           });
+
+          return res.json(resultWithoutInnerError);
         } else {
           log({
             mod: schema.module,
             type,
-            severity:"info",
+            severity: "info",
             traceId,
             clientCid,
             result,
-            args
+            args,
           });
-        }
 
-        return res.json(result);
+          return res.json(result);
+        }
       } catch (error) {
         const result: ApiErr<any> = {
           ok: false,
           error: {
-            reason: "http_io/unknown",
-            code:error.code,
-            message:error.message,
-            stack:error.stack,
-            details:error.details
+            reason: "io/http/handle_action/unknown",
+            code: error.code,
+            innerError: {
+              message: error.message,
+              stack: error.stack,
+              details: error.details,
+            },
           },
+        };
+
+        const resultWithoutInnerError = {
+          ...result,
+          error: { ...result.error, innerError: undefined },
         };
 
         log({
           mod: schema.module,
           type,
-          severity:"error",
+          severity: "error",
           traceId,
           clientCid,
           result: result,
-          args
+          args,
         });
 
-        return res.json(result);
+        return res.json(resultWithoutInnerError);
       }
     });
   };
@@ -171,12 +184,12 @@ export const createMod = <TToken extends {}>({
       });
     });
 
-  const  getApi:GetApi = () => schemas
+  const getApi: GetApi = () => schemas;
 
   return {
     listen,
     close,
     addModule,
-    getApi
+    getApi,
   };
 };
