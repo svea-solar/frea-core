@@ -9,14 +9,14 @@ import {
   HttpMod,
   AddModule,
   ModuleSchema,
-  Api,
-  ApiContext,
+  Mod,
+  Ctx,
   Listen,
   GetApi,
   Log,
 } from "./types";
 import { JwtAdapter } from "adapters";
-import { ApiErr } from "../../";
+import { Err } from "../../";
 
 export const createMod = <TToken extends {}>({
   port,
@@ -31,7 +31,7 @@ export const createMod = <TToken extends {}>({
 }): HttpMod => {
   const app = express();
 
-  let schemas: ModuleSchema<Api>[] = [];
+  let schemas: ModuleSchema<Mod>[] = [];
 
   const corsOptions = {
     origin: corsList,
@@ -87,7 +87,7 @@ export const createMod = <TToken extends {}>({
         token = jwtResult.data;
       }
       const clientCid = req.body.clientCid;
-      const ctx: ApiContext = {
+      const ctx: Ctx = {
         type,
         token,
         clientIp: clientIp === null ? undefined : clientIp,
@@ -128,7 +128,7 @@ export const createMod = <TToken extends {}>({
           return res.json(result);
         }
       } catch (error) {
-        const result: ApiErr<any> = {
+        const result: Err<any> = {
           ok: false,
           error: {
             reason: "io/http/handle_action/unknown",
