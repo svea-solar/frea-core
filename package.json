@@ -27,7 +27,7 @@
     "@types/helmet": "0.0.48",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/request-ip": "0.0.35",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "husky": "^4.2.5",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.0",
