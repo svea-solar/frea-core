@@ -10,7 +10,7 @@ export const create = <T extends {}>({
   const verify: Verify<T> = (tokenString) =>
     // Why do we need the any here?
     new Promise<any>((res) => {
-      jwt.verify(tokenString, jwtSecret, async (err, token) => {
+      jwt.verify(tokenString, jwtSecret, (err, token) => {
         if (err) {
           return res({
             ok: false,
