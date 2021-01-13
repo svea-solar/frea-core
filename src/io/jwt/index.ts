@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
+import { Jwt, Sign, Verify } from "./types";
+export * from "./types";
 
-import { JwtAdapter, Sign, Verify } from "./types";
-
-export const createMod = <T extends {}>({
+export const create = <T extends {}>({
   jwtSecret,
 }: {
   jwtSecret: string;
-}): JwtAdapter<T> => {
+}): Jwt<T> => {
   const verify: Verify<T> = (tokenString) =>
     // Why do we need the any here?
     new Promise<any>((res) => {
@@ -14,7 +14,7 @@ export const createMod = <T extends {}>({
         if (err) {
           return res({
             ok: false,
-            error: { reason: "token_verification_failed" },
+            error: { code: "token_verification_failed" },
           });
         }
 
@@ -32,7 +32,7 @@ export const createMod = <T extends {}>({
         if (err) {
           return res({
             ok: false,
-            error: { reason: "token_sign_failed" },
+            error: { code: "token_sign_failed" },
           });
         }
 
