@@ -1,6 +1,16 @@
 import { create } from ".";
 
-describe("sign", () => {});
+describe("sign", () => {
+  test('ok', async () => {
+    const expectation = { ok: true, data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IiNlbWFpbCMiLCJpYXQiOjEwfQ.YWP8h_BYdEZd4CCQZwunD7O56cGOUdZaVOpHh5OYcLk" };
+
+    const jwt = create<{ email: string, iat: number }>({ jwtSecret: "#jwtSecret#" });
+    const result = await jwt.sign({ email: "#email#", iat: 10 });
+
+    expect(result).toEqual(expectation);
+  })
+});
+
 
 describe("verify", () => {
   test("ok", async () => {
