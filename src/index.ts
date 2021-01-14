@@ -1,4 +1,4 @@
-export * as io from "./io";
+export * as Io from "./io";
 export * from "./types";
 export * from "./get_env";
-export * from "./unhandled";
+export * from "./handle_exceptions";
