@@ -1,14 +1,12 @@
-import { ApiResult } from "../../../types";
+import { Result } from "../../../types";
 
 export type InsertData = void;
 
 export type InsertError = {
-  reason: "unknown" | "cache_item_already_exists";
+  code: "unknown" | "cache_item_already_exists";
 };
 
-export type Insert = (args: {
-  data: any;
-}) => ApiResult<InsertData, InsertError>;
+export type Insert = (args: { data: any }) => Result<InsertData, InsertError>;
 
 export type GetData = {
   // TODO: make it a generic.
@@ -18,18 +16,16 @@ export type GetData = {
 };
 
 export type GetError = {
-  reason: "unknown" | "cache_item_not_found";
+  code: "unknown" | "cache_item_not_found";
 };
 
-export type Get = (args: { uuid: string }) => ApiResult<GetData, GetError>;
+export type Get = (args: { uuid: string }) => Result<GetData, GetError>;
 
 export type UpdateData = void;
 
-export type UpdateError = { reason: "unknown" };
+export type UpdateError = { code: "unknown" };
 
-export type Update = (args: {
-  data: any;
-}) => ApiResult<UpdateData, UpdateError>;
+export type Update = (args: { data: any }) => Result<UpdateData, UpdateError>;
 
 export type CacheStore = {
   insert: Insert;
