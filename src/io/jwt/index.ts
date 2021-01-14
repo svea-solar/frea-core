@@ -14,7 +14,10 @@ export const create = <TTokenData extends {}>({
         if (err) {
           return res({
             ok: false,
-            error: { code: "token_verification_failed", innerError: { name: err.name, message: err.message } },
+            error: {
+              code: "token_verification_failed",
+              innerError: { name: err.name, message: err.message },
+            },
           });
         }
 
@@ -32,7 +35,10 @@ export const create = <TTokenData extends {}>({
         if (err) {
           return res({
             ok: false,
-            error: { code: "token_sign_failed" },
+            error: {
+              code: "token_sign_failed",
+              innerError: { name: err.name, message: err.message },
+            },
           });
         }
 

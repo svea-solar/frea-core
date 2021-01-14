@@ -1,16 +1,42 @@
 import { create } from ".";
 
 describe("sign", () => {
-  test('ok', async () => {
-    const expectation = { ok: true, data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IiNlbWFpbCMiLCJpYXQiOjEwfQ.YWP8h_BYdEZd4CCQZwunD7O56cGOUdZaVOpHh5OYcLk" };
+  test("ok", async () => {
+    const expectation = {
+      ok: true,
+      data:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IiNlbWFpbCMiLCJpYXQiOjEwfQ.YWP8h_BYdEZd4CCQZwunD7O56cGOUdZaVOpHh5OYcLk",
+    };
 
-    const jwt = create<{ email: string, iat: number }>({ jwtSecret: "#jwtSecret#" });
+    const jwt = create<{ email: string; iat: number }>({
+      jwtSecret: "#jwtSecret#",
+    });
     const result = await jwt.sign({ email: "#email#", iat: 10 });
 
     expect(result).toEqual(expectation);
-  })
-});
+  });
 
+  test("err", async () => {
+    const expected = {
+      ok: false,
+      error: {
+        code: "token_sign_failed",
+        innerError: {
+          name: "Error",
+          message: '"iat" should be a number of seconds',
+        },
+      },
+    };
+
+    const jwt = create({ jwtSecret: "dogsarecats" });
+
+    const result = await jwt.sign({
+      iat: "##invalid_iat##",
+    });
+
+    expect(result).toEqual(expected);
+  });
+});
 
 describe("verify", () => {
   test("ok", async () => {
