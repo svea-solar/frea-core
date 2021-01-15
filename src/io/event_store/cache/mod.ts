@@ -23,11 +23,11 @@ export const createMod: Create = ({ module, db }) => {
       return { ok: true };
     } catch (error) {
       if (error.code === "23505") {
-        return { ok: false, error: { reason: "cache_item_already_exists" } };
+        return { ok: false, error: { code: "cache_item_already_exists" } };
       }
 
       console.error(error);
-      return { ok: false, error: { reason: "unknown" } };
+      return { ok: false, error: { code: "unknown" } };
     }
   };
 
@@ -41,7 +41,7 @@ export const createMod: Create = ({ module, db }) => {
     );
 
     if (!dbResult) {
-      return { ok: false, error: { reason: "cache_item_not_found" } };
+      return { ok: false, error: { code: "cache_item_not_found" } };
     }
 
     return {

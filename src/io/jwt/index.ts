@@ -1,38 +1,44 @@
 import jwt from "jsonwebtoken";
+import { Jwt, Sign, Verify } from "./types";
+export * from "./types";
 
-import { JwtAdapter, Sign, Verify } from "./types";
-
-export const createMod = <T extends {}>({
+export const create = <TTokenData extends {}>({
   jwtSecret,
 }: {
   jwtSecret: string;
-}): JwtAdapter<T> => {
-  const verify: Verify<T> = (tokenString) =>
+}): Jwt<TTokenData> => {
+  const verify: Verify<TTokenData> = (tokenString) =>
     // Why do we need the any here?
     new Promise<any>((res) => {
-      jwt.verify(tokenString, jwtSecret, async (err, token) => {
+      jwt.verify(tokenString, jwtSecret, (err, token) => {
         if (err) {
           return res({
             ok: false,
-            error: { reason: "token_verification_failed" },
+            error: {
+              code: "token_verification_failed",
+              innerError: { name: err.name, message: err.message },
+            },
           });
         }
 
         res({
           ok: true,
           // if err is false, token will always be T, but we need to cast it unsafely.
-          data: token as T,
+          data: token as TTokenData,
         });
       });
     });
 
-  const sign: Sign<T> = (data) =>
+  const sign: Sign<TTokenData> = (data) =>
     new Promise((res) => {
       jwt.sign(data, jwtSecret, (err, token) => {
         if (err) {
           return res({
             ok: false,
-            error: { reason: "token_sign_failed" },
+            error: {
+              code: "token_sign_failed",
+              innerError: { name: err.name, message: err.message },
+            },
           });
         }
 

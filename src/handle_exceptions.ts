@@ -1,8 +1,8 @@
-type Init = () => void;
+type HandleExceptions = () => void;
 
 let initialized = false;
 
-export const init: Init = () => {
+export const handleExceptions: HandleExceptions = () => {
   if (initialized) {
     throw new Error("The unhandled util has already been initialized.");
   }
