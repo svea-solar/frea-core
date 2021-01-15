@@ -9,7 +9,7 @@ import { Close, HttpMod, AddModule, Listen, GetApi } from "./types";
 import { Ctx, Err, Log, Mod, ModuleSchema } from "../../";
 export * from "./types";
 
-export const createHttpIo = <TToken extends {}>({
+export const create = <TToken extends {}>({
   jwt,
   port,
   corsList,
