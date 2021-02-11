@@ -41,7 +41,7 @@ export const create = <TToken extends {}>({
   const addModule: AddModule = (schema, api) => {
     schemas.push(schema);
     app.post(`/api/${schema.module}`, async (req, res) => {
-      const { type } = req.body;
+      const { type, meta } = req.body;
       const actionSchema = schema.actions[type];
 
       // type === any, so we need to make sure we got a schema back.
@@ -88,6 +88,38 @@ export const create = <TToken extends {}>({
       try {
         const result = await api[type](args, ctx);
 
+        let logArgs: { [k: string]: string } = {};
+        let logResult: any = {
+          ...result,
+        };
+
+        if (result.ok) {
+          logResult.data = {};
+        } else {
+          logResult.error = { innerError: result.error?.innerError };
+        }
+
+        if (actionSchema.log) {
+          if (actionSchema.log[0] === "*") {
+            logArgs = args;
+            logResult = result;
+          } else {
+            actionSchema.log.forEach((logKey) => {
+              logArgs[logKey] = args[logKey];
+              if (result.ok) {
+                if ((result as any).data) {
+                  logResult.data = (result as any)?.data[logKey];
+                }
+              } else {
+                logResult.error = (result as any)?.error[logKey];
+              }
+            });
+          }
+        }
+
+        console.log({ actionSchemaLog: actionSchema.log });
+        console.log({ logResult, logArgs });
+
         if (!result.ok) {
           const resultWithoutInnerError = {
             ...result,
@@ -100,8 +132,9 @@ export const create = <TToken extends {}>({
             severity: "error",
             traceId,
             clientCid,
-            result,
-            args,
+            result: logResult,
+            args: logArgs,
+            meta,
           });
 
           return res.json(resultWithoutInnerError);
@@ -112,8 +145,8 @@ export const create = <TToken extends {}>({
             severity: "info",
             traceId,
             clientCid,
-            result,
-            args,
+            result: logArgs,
+            args: logResult,
           });
 
           return res.json(result);
