@@ -1,6 +1,6 @@
 export type Ok<T> = T extends void ? { ok: true } : { ok: true; data: T };
 
-export type Err<E extends { code: string }> = {
+export type Err<E extends { code: string; innerError?: Error }> = {
   ok: false;
   error: E;
 };
@@ -17,11 +17,12 @@ export type Log = (args: {
   result: unknown;
   clientCid?: string;
   args: unknown;
+  meta?: unknown;
 }) => void;
 
 export type ActionArgsSchema<
   TAction extends (args: any, ctx: any) => Result<any, any>
-  > = TAction extends (args: infer TArgs, ctx: any) => Result<any, any>
+> = TAction extends (args: infer TArgs, ctx: any) => Result<any, any>
   ? (keyof TArgs)[]
   : never;
 
@@ -40,6 +41,7 @@ export type ActionsSchema<TApi extends Mod> = {
   [K in keyof TApi]: {
     args: ActionArgsSchema<TApi[K]>;
     public?: true;
+    log?: string[];
   };
 };
 
@@ -51,4 +53,3 @@ export type ModuleSchema<TApi extends Mod> = {
 export type ActionSchema = {
   args: string[];
 };
-
