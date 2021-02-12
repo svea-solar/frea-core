@@ -96,7 +96,10 @@ export const create = <TToken extends {}>({
         if (result.ok) {
           logResult.data = {};
         } else {
-          logResult.error = { innerError: result.error?.innerError };
+          logResult.error = {
+            code: result.error.code,
+            innerError: result.error?.innerError,
+          };
         }
 
         if (actionSchema.log) {
@@ -108,17 +111,14 @@ export const create = <TToken extends {}>({
               logArgs[logKey] = args[logKey];
               if (result.ok) {
                 if ((result as any).data) {
-                  logResult.data = (result as any)?.data[logKey];
+                  logResult.data[logKey] = (result as any)?.data[logKey];
                 }
               } else {
-                logResult.error = (result as any)?.error[logKey];
+                logResult.error[logKey] = (result as any)?.error[logKey];
               }
             });
           }
         }
-
-        console.log({ actionSchemaLog: actionSchema.log });
-        console.log({ logResult, logArgs });
 
         if (!result.ok) {
           const resultWithoutInnerError = {
