@@ -145,8 +145,8 @@ export const create = <TToken extends {}>({
             severity: "info",
             traceId,
             clientCid,
-            result: logArgs,
-            args: logResult,
+            result: logResult,
+            args: logArgs,
             meta,
           });
 
@@ -170,6 +170,8 @@ export const create = <TToken extends {}>({
           ...result,
           error: { ...result.error, innerError: undefined },
         };
+
+        console.log("Inside catch!");
 
         log({
           mod: schema.module,
