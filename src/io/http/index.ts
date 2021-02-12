@@ -147,6 +147,7 @@ export const create = <TToken extends {}>({
             clientCid,
             result: logArgs,
             args: logResult,
+            meta,
           });
 
           return res.json(result);
@@ -155,12 +156,12 @@ export const create = <TToken extends {}>({
         const result: Err<any> = {
           ok: false,
           error: {
-            reason: "io/http/handle_action/unknown",
-            code: error.code,
+            code: "io/http/handle_action/unknown",
             innerError: {
               message: error.message,
               stack: error.stack,
               details: error.details,
+              data: error.data,
             },
           },
         };
@@ -176,8 +177,9 @@ export const create = <TToken extends {}>({
           severity: "error",
           traceId,
           clientCid,
-          result: result,
-          args,
+          result,
+          args: {},
+          meta,
         });
 
         return res.json(resultWithoutInnerError);
