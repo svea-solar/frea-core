@@ -31,6 +31,20 @@ export const create = ({
 
 const handleHapiError = (error: AxiosError): Err<PostErr> => {
   if (error.response) {
+    if (
+      error.response.data.statusCode === 400 &&
+      error.response.data.error === "Bad Request" &&
+      error.response.data.validation
+    ) {
+      return {
+        ok: false,
+        error: {
+          ...error.response.data,
+          code: "io/client.post->invalid_request",
+        },
+      };
+    }
+
     return {
       ok: false,
       error: {

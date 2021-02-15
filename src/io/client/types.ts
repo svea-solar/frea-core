@@ -4,9 +4,16 @@ import { Result } from "../..";
 export type PostErr =
   | {
       code: "io/client.post->response";
-      statusCode: string;
+      statusCode: number;
       error: string;
       message: string;
+    }
+  | {
+      code: "io/client.post->invalid_request";
+      statusCode: 400;
+      error: "Bad Request";
+      message: string;
+      validation: { source: string; keys: string[] };
     }
   | { code: "io/client.post->request"; innerError: AxiosError }
   | {
