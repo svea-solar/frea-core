@@ -21,7 +21,10 @@ export type PostErr =
       innerError: AxiosError;
     };
 
-export type Post = (args: { url: string; data?: any }) => Result<any, PostErr>;
+export type Post = <TOk>(args: {
+  url: string;
+  data?: any;
+}) => Result<TOk, PostErr>;
 
 export type Client = {
   post: Post;

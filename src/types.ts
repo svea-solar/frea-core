@@ -5,7 +5,9 @@ export type Err<E extends { code: string; innerError?: Error }> = {
   error: E;
 };
 
-export type Result<T, E extends { code: string }> = Promise<Ok<T> | Err<E>>;
+export type Result<T, E extends { code: string; innerError?: Error }> = Promise<
+  Ok<T> | Err<E>
+>;
 
 export type Severity = "info" | "error";
 

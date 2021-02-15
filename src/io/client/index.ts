@@ -1,6 +1,6 @@
 import Axios, { AxiosError } from "axios";
-import { Err } from "../..";
-import { Client, Post, PostErr } from "./types";
+import { Err, Ok } from "../..";
+import { Client, PostErr } from "./types";
 
 export * from "./types";
 
@@ -19,10 +19,10 @@ export const create = ({
     baseURL: baseUrl,
   });
 
-  const post: Post = async ({ url, data }) => {
+  const post = async <TOk>({ url, data }: { url: string; data?: string }) => {
     try {
       const response = await axios.post(url, data);
-      return { ok: true, data: response.data };
+      return { ok: true, data: response.data } as Ok<TOk>;
     } catch (error) {
       return handleHapiError(error);
     }
