@@ -30,12 +30,31 @@ export const create = ({
   return { post };
 };
 
-const handleHapiError = (error: AxiosError): Err<PostErr> => ({
-  ok: false,
-  error: {
-    code: "io/client.post->unknown",
-    // code: error?.request?.error,
-    // status: error?.request?.statusCode,
-    innerError: error,
-  },
-});
+const handleHapiError = (error: AxiosError): Err<PostErr> => {
+  if (error.response) {
+    return {
+      ok: false,
+      error: {
+        ...error.response.data,
+        code: "io/client.post->response",
+      },
+    };
+  }
+
+  if (error.request) {
+    return {
+      ok: false,
+      error: {
+        code: "io/client.post->request",
+        innerError: error,
+      },
+    };
+  }
+  return {
+    ok: false,
+    error: {
+      code: "io/client.post->unknown",
+      innerError: error,
+    },
+  };
+};
