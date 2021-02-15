@@ -2,6 +2,8 @@ import Axios, { AxiosError } from "axios";
 import { Err } from "../..";
 import { Client, Post, PostErr } from "./types";
 
+export * from "./types";
+
 export const create = ({
   apiKey,
   baseUrl,
