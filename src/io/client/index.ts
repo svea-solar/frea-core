@@ -22,8 +22,7 @@ export const create = ({
       const response = await axios.post(url, data);
       return { ok: true, data: response.data };
     } catch (error) {
-      const result = handleHapiError(error);
-      return result;
+      return handleHapiError(error);
     }
   };
 
