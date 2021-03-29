@@ -12,18 +12,16 @@ import {
 
 export * from "./types";
 
-type CreateStore = (args: { name: string; dbUri: string }) => Promise<Store>;
+type Create = (args: { name: string; dbUri: string }) => Promise<Store>;
 
-export const createStore: CreateStore = async ({ name, dbUri }) => {
+export const create: Create = async ({ name, dbUri }) => {
   const { db } = await EventStoreIo.createStore({ module: name, dbUri });
-
-  const mod = name;
 
   const getBy: GetBy = async (key, value) => {
     try {
       const dbResult = await db.oneOrNone(
-        /*sql*/ `SELECT * FROM $<mod:name>.cache WHERE data->>$<key> = $<value> ORDER BY updated_at DESC LIMIT 1`,
-        { key, value, mod }
+        /*sql*/ `SELECT * FROM $<name:name>.cache WHERE data->>$<key> = $<value> ORDER BY updated_at DESC LIMIT 1`,
+        { key, value, name }
       );
 
       if (!dbResult) {
@@ -31,7 +29,7 @@ export const createStore: CreateStore = async ({ name, dbUri }) => {
           ok: false,
           error: {
             code: "io/event_store.get_by->failed:item_not_found",
-            args: { key, value },
+            args: { key, value, name },
           },
         };
 
@@ -54,8 +52,8 @@ export const createStore: CreateStore = async ({ name, dbUri }) => {
     return db
       .tx(async (t) => {
         const selectResult = await t.oneOrNone(
-          /*sql*/ `SELECT * FROM $<mod:name>.cache WHERE data->>$<idKey> = $<idVal>`,
-          { idKey, idVal, mod }
+          /*sql*/ `SELECT * FROM $<name:name>.cache WHERE data->>$<idKey> = $<idVal>`,
+          { idKey, idVal, name }
         );
 
         if (selectResult) {
@@ -70,23 +68,23 @@ export const createStore: CreateStore = async ({ name, dbUri }) => {
         }
 
         await t.none(
-          /*sql*/ `INSERT INTO $<mod:name>.events
-  (event)
-  VALUES
-  ($<event>)`,
+          /*sql*/ `INSERT INTO $<name:name>.events
+                    (event)
+                    VALUES
+                    ($<event>)`,
           {
-            mod,
+            name,
             event,
           }
         );
 
         await t.none(
-          /*sql*/ `INSERT INTO $<mod:name>.cache
+          /*sql*/ `INSERT INTO $<name:name>.cache
         (uuid, data)
         VALUES
         ($<uuid>, $<data>)`,
           {
-            mod,
+            name,
             uuid: event.uuid,
             data: state,
           }
@@ -110,8 +108,8 @@ export const createStore: CreateStore = async ({ name, dbUri }) => {
     return db
       .tx(async (t) => {
         const selectResult = await t.oneOrNone(
-          /*sql*/ `SELECT * FROM $<mod:name>.cache WHERE data->>$<idKey> = $<idVal>`,
-          { idKey, idVal, mod }
+          /*sql*/ `SELECT * FROM $<name:name>.cache WHERE data->>$<idKey> = $<idVal>`,
+          { idKey, idVal, name }
         );
 
         if (!selectResult) {
@@ -130,20 +128,20 @@ export const createStore: CreateStore = async ({ name, dbUri }) => {
         const nextState = reducer(currentState, event);
 
         await t.none(
-          /*sql*/ `INSERT INTO $<mod:name>.events
+          /*sql*/ `INSERT INTO $<name:name>.events
         (event)
         VALUES
         ($<event>)`,
           {
-            mod,
+            name,
             event,
           }
         );
 
         await t.none(
-          /*sql*/ `UPDATE $<mod:name>.cache SET data = $<data> where uuid = $<uuid>`,
+          /*sql*/ `UPDATE $<name:name>.cache SET data = $<data> where uuid = $<uuid>`,
           {
-            mod,
+            name,
             uuid: event.uuid,
             data: nextState,
           }
