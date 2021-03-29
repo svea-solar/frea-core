@@ -1,4 +1,4 @@
-import { EventStoreIo, Err, Ok } from "../..";
+import { Err, Ok } from "../..";
 
 import {
   Insert,
@@ -9,13 +9,51 @@ import {
   UpdateError,
   Store,
 } from "./types";
+import Pgp from "pg-promise";
 
 export * from "./types";
 
 type Create = (args: { name: string; dbUri: string }) => Promise<Store>;
 
+let db: Pgp.IDatabase<unknown>;
+
 export const create: Create = async ({ name, dbUri }) => {
-  const { db } = await EventStoreIo.createStore({ module: name, dbUri });
+  if (db === undefined) {
+    db = Pgp()({
+      connectionString: dbUri,
+    });
+  }
+
+  // Ensure DB connection.
+  await db.query("select 1");
+
+  console.log(`Event store DB connection is OK.`);
+
+  await db.none(/*sql*/ `CREATE SCHEMA IF NOT EXISTS $<name:name>`, {
+    name,
+  });
+
+  await db.none(
+    /*sql*/ `CREATE TABLE IF NOT EXISTS $<name:name>.events(
+    "id" serial PRIMARY KEY NOT NULL,
+    "event" jsonb NOT NULL,
+    "inserted_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
+  )`,
+    {
+      name,
+    }
+  );
+
+  await db.none(
+    /*sql*/ `CREATE TABLE IF NOT EXISTS $<name:name>.cache(
+        "uuid" uuid PRIMARY KEY NOT NULL,
+        "data" jsonb NOT NULL,
+        "updated_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
+      )`,
+    {
+      name,
+    }
+  );
 
   const getBy: GetBy = async (key, value) => {
     try {
