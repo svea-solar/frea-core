@@ -10,6 +10,7 @@ import {
   Store,
 } from "./types";
 import Pgp from "pg-promise";
+import { migrate } from "./migrate";
 
 export * from "./types";
 
@@ -29,31 +30,7 @@ export const create: Create = async ({ name, dbUri }) => {
 
   console.log(`Event store DB connection is OK.`);
 
-  await db.none(/*sql*/ `CREATE SCHEMA IF NOT EXISTS $<name:name>`, {
-    name,
-  });
-
-  await db.none(
-    /*sql*/ `CREATE TABLE IF NOT EXISTS $<name:name>.events(
-    "id" serial PRIMARY KEY NOT NULL,
-    "event" jsonb NOT NULL,
-    "inserted_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
-  )`,
-    {
-      name,
-    }
-  );
-
-  await db.none(
-    /*sql*/ `CREATE TABLE IF NOT EXISTS $<name:name>.cache(
-        "uuid" uuid PRIMARY KEY NOT NULL,
-        "data" jsonb NOT NULL,
-        "updated_at" timestamp(6) NOT NULL DEFAULT statement_timestamp()
-      )`,
-    {
-      name,
-    }
-  );
+  await migrate(db, name);
 
   const getBy: GetBy = async (key, value) => {
     try {
