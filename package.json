@@ -13,7 +13,7 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test",
+    "test": "DB_URI=postgres://postgres:password@localhost:5432/postgres tsdx test",
     "prepare": "tsdx build"
   },
   "peerDependencies": {},
@@ -29,6 +29,7 @@
     "@types/request-ip": "0.0.35",
     "axios": "^0.21.1",
     "husky": "^4.2.5",
+    "serialize-error": "^8.0.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.0",
     "typescript": "^3.9.6"

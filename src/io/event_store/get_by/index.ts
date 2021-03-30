@@ -1,6 +1,6 @@
 import pgPromise from "pg-promise";
 import { Err } from "types";
-import { GetBy, GetByError } from "./types";
+import { GetBy, GetByErr } from "./types";
 
 export * from "./types";
 
@@ -18,7 +18,7 @@ export const createGetBy = ({
     );
 
     if (!dbResult) {
-      const err: Err<GetByError> = {
+      const err: Err<GetByErr> = {
         ok: false,
         error: {
           code: "io/event_store.get_by->failed:item_not_found",

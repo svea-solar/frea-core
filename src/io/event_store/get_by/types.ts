@@ -1,6 +1,6 @@
 import { Result } from "../../..";
 
-export type GetByError =
+export type GetByErr =
   | {
       code: "io/event_store.get_by->failed:unknown";
     }
@@ -9,4 +9,4 @@ export type GetByError =
 export type GetBy = (
   idKey: string,
   idVal: string
-) => Result<{ [k: string]: any }, GetByError>;
+) => Result<{ [k: string]: any }, GetByErr>;
