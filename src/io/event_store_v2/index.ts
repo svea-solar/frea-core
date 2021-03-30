@@ -12,24 +12,14 @@ import {
 import Pgp from "pg-promise";
 import { migrate } from "./migrate";
 import { createGetBy } from "./get_by";
+import { connect } from "./connect";
 
 export * from "./types";
 
 type Create = (args: { name: string; dbUri: string }) => Promise<Store>;
 
-let db: Pgp.IDatabase<unknown>;
-
 export const create: Create = async ({ name, dbUri }) => {
-  if (db === undefined) {
-    db = Pgp()({
-      connectionString: dbUri,
-    });
-  }
-
-  // Ensure DB connection.
-  await db.query("select 1");
-
-  console.log(`Event store DB connection is OK.`);
+  const db = await connect(dbUri);
 
   await migrate(db, name);
 
