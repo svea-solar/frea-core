@@ -1,35 +1,22 @@
-import { createCache } from "./cache";
-import { createEventStore } from "./event";
-import Pgp from "pg-promise";
+import { Store } from "./types";
+import { migrate } from "./migrate";
+import { createGetBy } from "./get_by";
+import { connect } from "./connect";
+import { createInsert } from "./insert";
+import { createUpdate } from "./update";
+
 export * from "./types";
-export * from "./event/types";
 
-let db: Pgp.IDatabase<unknown>;
+type Create = (args: { name: string; dbUri: string }) => Promise<Store>;
 
-export const createStore = async <TEvent>({
-  module,
-  dbUri,
-}: {
-  module: string;
-  dbUri: string;
-}) => {
-  if (db === undefined) {
-    db = Pgp()({
-      connectionString: dbUri,
-    });
+export const create: Create = async ({ name, dbUri }) => {
+  const db = await connect(dbUri);
 
-    // Ensure DB connection.
-    await db.query("select 1");
+  await migrate(db, name);
 
-    console.log(`Event store DB connection is OK.`);
-  }
-
-  await db.none(/*sql*/ `CREATE SCHEMA IF NOT EXISTS $<module:name>`, {
-    module,
-  });
-
-  const event = await createEventStore<TEvent>({ module, db });
-  const cache = await createCache({ module, db });
-
-  return { event, cache, db };
+  return {
+    getBy: createGetBy({ db, name }),
+    insert: createInsert({ db, name }),
+    update: createUpdate({ db, name }),
+  };
 };

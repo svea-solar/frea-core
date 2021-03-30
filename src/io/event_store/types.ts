@@ -1,7 +1,10 @@
-import { CacheStore } from "./cache";
-import { EventStoreApi } from "./event";
+import { Result } from "../..";
+import { GetBy } from "./get_by";
+import { Insert } from "./insert";
+import { Update } from "./update";
 
-export type Store<TEvent> = {
-  cache: CacheStore;
-  event: EventStoreApi<TEvent>;
+export type Store = {
+  getBy: GetBy;
+  insert: Insert;
+  update: Update;
 };

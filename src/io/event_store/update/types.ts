@@ -1,4 +1,4 @@
-import { Result } from "../../../";
+import { Result } from "../../..";
 
 export type UpdateOk = void;
 
