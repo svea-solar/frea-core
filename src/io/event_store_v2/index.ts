@@ -11,6 +11,7 @@ import {
 } from "./types";
 import Pgp from "pg-promise";
 import { migrate } from "./migrate";
+import { createGetBy } from "./get_by";
 
 export * from "./types";
 
@@ -32,36 +33,7 @@ export const create: Create = async ({ name, dbUri }) => {
 
   await migrate(db, name);
 
-  const getBy: GetBy = async (key, value) => {
-    try {
-      const dbResult = await db.oneOrNone(
-        /*sql*/ `SELECT * FROM $<name:name>.cache WHERE data->>$<key> = $<value> ORDER BY updated_at DESC LIMIT 1`,
-        { key, value, name }
-      );
-
-      if (!dbResult) {
-        const err: Err<GetByError> = {
-          ok: false,
-          error: {
-            code: "io/event_store.get_by->failed:item_not_found",
-            args: { key, value, name },
-          },
-        };
-
-        return err;
-      }
-
-      return { ok: true, data: dbResult };
-    } catch (error) {
-      return {
-        ok: false,
-        error: {
-          code: "io/event_store.get_by->failed:unknown",
-          innerError: error,
-        },
-      };
-    }
-  };
+  const getBy: GetBy = createGetBy({ db, name });
 
   const insert: Insert = async ({ idKey, idVal, event, state }) => {
     return db
