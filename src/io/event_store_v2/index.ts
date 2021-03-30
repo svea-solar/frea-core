@@ -1,10 +1,9 @@
 import { Err, Ok } from "../..";
-
-import { Insert, CreateError, Update, UpdateError, Store } from "./types";
-
+import { Update, UpdateError, Store } from "./types";
 import { migrate } from "./migrate";
 import { createGetBy } from "./get_by";
 import { connect } from "./connect";
+import { createInsert } from "./insert";
 
 export * from "./types";
 
@@ -17,61 +16,7 @@ export const create: Create = async ({ name, dbUri }) => {
 
   const getBy = createGetBy({ db, name });
 
-  const insert: Insert = async ({ idKey, idVal, event, state }) => {
-    return db
-      .tx(async (t) => {
-        const selectResult = await t.oneOrNone(
-          /*sql*/ `SELECT * FROM $<name:name>.cache WHERE data->>$<idKey> = $<idVal>`,
-          { idKey, idVal, name }
-        );
-
-        if (selectResult) {
-          const err: Err<CreateError> = {
-            ok: false,
-            error: {
-              code: "io/event_store.create->failed:item_already_exist",
-              item: selectResult,
-            },
-          };
-          return err;
-        }
-
-        await t.none(
-          /*sql*/ `INSERT INTO $<name:name>.events
-                    (event)
-                    VALUES
-                    ($<event>)`,
-          {
-            name,
-            event,
-          }
-        );
-
-        await t.none(
-          /*sql*/ `INSERT INTO $<name:name>.cache
-        (uuid, data)
-        VALUES
-        ($<uuid>, $<data>)`,
-          {
-            name,
-            uuid: event.uuid,
-            data: state,
-          }
-        );
-
-        const ok: Ok<void> = { ok: true };
-        return ok;
-      })
-      .catch((error) => {
-        return {
-          ok: false,
-          error: {
-            code: "io/event_store.create->failed:unknown",
-            innerError: error,
-          },
-        };
-      });
-  };
+  const insert = createInsert({ db, name });
 
   const update: Update = async ({ idKey, idVal, event, reducer }) => {
     return db

@@ -1,18 +1,6 @@
 import { Result } from "../..";
 import { GetBy } from "./get_by";
-
-export type CreateData = void;
-
-export type CreateError =
-  | { code: "io/event_store.create->failed:unknown" }
-  | { code: "io/event_store.create->failed:item_already_exist"; item: any };
-
-export type Insert = (args: {
-  idKey: string;
-  idVal: string;
-  event: any;
-  state: any;
-}) => Result<CreateData, CreateError>;
+import { Insert } from "./insert";
 
 export type UpdateData = void;
 
