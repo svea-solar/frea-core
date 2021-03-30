@@ -14,11 +14,9 @@ export const create: Create = async ({ name, dbUri }) => {
 
   await migrate(db, name);
 
-  const getBy = createGetBy({ db, name });
-
-  const insert = createInsert({ db, name });
-
-  const update = createUpdate({ db, name });
-
-  return { getBy, insert, update };
+  return {
+    getBy: createGetBy({ db, name }),
+    insert: createInsert({ db, name }),
+    update: createUpdate({ db, name }),
+  };
 };
