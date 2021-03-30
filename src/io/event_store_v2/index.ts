@@ -1,15 +1,7 @@
 import { Err, Ok } from "../..";
 
-import {
-  Insert,
-  CreateError,
-  GetBy,
-  GetByError,
-  Update,
-  UpdateError,
-  Store,
-} from "./types";
-import Pgp from "pg-promise";
+import { Insert, CreateError, Update, UpdateError, Store } from "./types";
+
 import { migrate } from "./migrate";
 import { createGetBy } from "./get_by";
 import { connect } from "./connect";
@@ -23,7 +15,7 @@ export const create: Create = async ({ name, dbUri }) => {
 
   await migrate(db, name);
 
-  const getBy: GetBy = createGetBy({ db, name });
+  const getBy = createGetBy({ db, name });
 
   const insert: Insert = async ({ idKey, idVal, event, state }) => {
     return db

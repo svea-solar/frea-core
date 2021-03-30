@@ -2,6 +2,8 @@ import pgPromise from "pg-promise";
 import { Err } from "types";
 import { GetBy, GetByError } from "./types";
 
+export * from "./types";
+
 export const createGetBy = ({
   db,
   name,
