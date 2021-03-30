@@ -1,11 +1,36 @@
 name: CI
+
 on: [push]
+
 jobs:
+  # Label of the container job
+  container-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: node:12
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Begin CI...
+      - name: Begin CI
         uses: actions/checkout@v2
 
       - name: Use Node 12
@@ -27,9 +52,10 @@ jobs:
           CI: true
 
       - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
+        run: yarn test-ci --ci --coverage --maxWorkers=2
         env:
           CI: true
+          DB_URI: postgres://postgres:password@postgres:5432/postgres
 
       - name: Build
         run: yarn build

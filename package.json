@@ -14,6 +14,7 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "DB_URI=postgres://postgres:password@localhost:5432/postgres tsdx test",
+    "test-ci": "tsdx test",
     "prepare": "tsdx build"
   },
   "peerDependencies": {},
