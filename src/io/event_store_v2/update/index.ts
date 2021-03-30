@@ -2,6 +2,8 @@ import pgPromise from "pg-promise";
 import { Err, Ok } from "../../..";
 import { Update, UpdateErr, UpdateOk } from "./types";
 
+export * from "./types";
+
 export const createUpdate = ({
   db,
   name,
