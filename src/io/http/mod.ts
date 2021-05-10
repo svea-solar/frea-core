@@ -16,7 +16,10 @@ import {
   Log,
 } from "./types";
 import { JwtAdapter } from "adapters";
-import { Err } from "../../";
+import { Err, getEnv } from "../../";
+
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
 
 export const createMod = <TToken extends {}>({
   port,
@@ -31,6 +34,17 @@ export const createMod = <TToken extends {}>({
 }): HttpMod => {
   const app = express();
 
+  Sentry.init({
+    dsn: getEnv("SENTRY_DSN"), // "https://be0d07ce2c6540cea8aa117dc90194f2@o363178.ingest.sentry.io/5757027",
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Express({ app }),
+    ],
+
+    tracesSampleRate: 1.0,
+    serverName:getEnv("SERVER_NAME")
+  });
+
   let schemas: ModuleSchema<Mod>[] = [];
 
   const corsOptions = {
@@ -40,6 +54,9 @@ export const createMod = <TToken extends {}>({
   app.use(cors(corsOptions));
   app.use(helmet());
   app.use(bodyParser.json());
+
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
 
   app.get("/live", (_, res) => res.status(200).send());
 
@@ -161,6 +178,11 @@ export const createMod = <TToken extends {}>({
     });
   };
 
+  app.use(function onError(err:any, req:any, res:any, next):any {
+    res.statusCode = 500;
+    res.end(res.sentry + "\n");
+  });
+
   let server: http.Server;
 
   const close: Close = () =>
@@ -178,6 +200,7 @@ export const createMod = <TToken extends {}>({
 
   const listen: Listen = () =>
     new Promise<void>((res) => {
+      app.use(Sentry.Handlers.errorHandler());
       server = app.listen(port, () => {
         console.log(`Server started on port ${port}.`);
         res();

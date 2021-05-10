@@ -16,7 +16,6 @@
     "test": "tsdx test",
     "prepare": "tsdx build"
   },
-  "peerDependencies": {},
   "name": "frea-core",
   "author": "Marcus Rådell",
   "module": "dist/frea_core.esm.js",
@@ -34,6 +33,8 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@sentry/node": "^6.3.6",
+    "@sentry/tracing": "^6.3.6",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
