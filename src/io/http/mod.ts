@@ -178,7 +178,7 @@ export const createMod = <TToken extends {}>({
     });
   };
 
-  app.use(function onError(err:any, req:any, res:any, next):any {
+  app.use(function onError(err:any, req:any, res:any, next:any) {
     res.statusCode = 500;
     res.end(res.sentry + "\n");
   });
