@@ -1,3 +1,7 @@
+# Deprecated
+
+**DO NOT USE THIS UNDER ANY CIRCUMSTANCES**
+
 # Frea core
 
 _Build modular TypeScript Node.js services._
