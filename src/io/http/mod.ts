@@ -35,7 +35,7 @@ export const createMod = <TToken extends {}>({
   const app = express();
 
   Sentry.init({
-    dsn: getEnv("SENTRY_DSN"), // "https://be0d07ce2c6540cea8aa117dc90194f2@o363178.ingest.sentry.io/5757027",
+    dsn: getEnv("SENTRY_DSN"), // "https://be0d07ce2c6540cea8aa117dc90194f2@o363178.ingest.sentry.io/124234",
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
